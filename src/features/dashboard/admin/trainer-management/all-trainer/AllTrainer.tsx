@@ -20,13 +20,17 @@ const AllTrainer = () => {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState(""); // Search State
 
-  const { data: trainerData, isLoading, error } = getAllTrainer({
+  const {
+    data: trainerData,
+    isLoading,
+    error,
+  } = getAllTrainer({
     query: {
       page,
       search: searchTerm,
     },
   });
-  console.log("trainerData", trainerData?.results);
+
   return (
     <div className="space-y-4 p-4">
       <Card>
@@ -38,7 +42,7 @@ const AllTrainer = () => {
             <div className="relative w-full md:w-72">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
               <Input
-                placeholder="Search name, email, style..."
+                placeholder="Search name, phone, email..."
                 className="pl-9"
                 value={searchTerm}
                 onChange={(e) => {

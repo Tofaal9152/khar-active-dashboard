@@ -71,8 +71,8 @@ export const uploadSingleFile = async (file: File): Promise<string> => {
     `/upload-file/`,
     formData,
   );
-
-  const url = res?.data?.stored_path;
+  console.log("response from upload:", res);
+  const url = res?.stored_path;
   if (!url) throw new Error("Upload succeeded but URL was not returned");
   return url;
 };

@@ -5,7 +5,10 @@ const serverSchema = z.object({
   SESSION_SECRET_KEY: z.string().min(32),
   SESSION_COOKIE_NAME: z.string().optional(),
   SESSION_MAX_AGE_DAYS: z.any().optional(),
-  NODE_ENV: z.enum(["development", "production"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production"])
+    .optional()
+    .default("development"),
 });
 
 const parsed = serverSchema.safeParse(process.env);

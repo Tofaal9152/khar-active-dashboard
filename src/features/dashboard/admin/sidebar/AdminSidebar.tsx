@@ -101,7 +101,7 @@ export function AdminManagementItems() {
           {
             title: "All Trainer",
             url: "/dashboard/admin/trainer-management/all-trainer",
-            icon: Users,
+            icon: UserPlus,
           },
         ],
       },
