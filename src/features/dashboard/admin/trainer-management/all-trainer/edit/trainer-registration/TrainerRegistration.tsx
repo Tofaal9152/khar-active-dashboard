@@ -46,11 +46,11 @@ import MultiSelectWithOther from "./MultiSelectWithOther";
 
 import { Switch } from "@/components/ui/switch";
 import { useMutationHandler } from "@/hooks/useMutationHandler";
+import { uploadSingleFile } from "@/services/uploadFile.service";
 import {
   GET_ALL_TRAINER_KEY,
   trainerSchema,
   updateTrainer,
-  uploadSingleFile,
 } from "../../../services/trainer.service";
 import TrainingTypePicker from "./TrainingTypePicker";
 

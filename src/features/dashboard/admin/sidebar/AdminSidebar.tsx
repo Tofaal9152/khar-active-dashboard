@@ -117,24 +117,24 @@ export function AdminManagementItems() {
       //     },
       //   ],
       // },
-      // {
-      //   title: "Package Management",
-      //   icon: Package,
-      //   isActive: true,
-      //   items: [
-      //     {
-      //       title: "All Packages",
-      //       url: "/dashboard/admin/package-management/all-packages",
-      //       icon: Receipt,
-      //     },
+      {
+        title: "Package Management",
+        icon: Package,
+        isActive: true,
+        items: [
+          {
+            title: "All Packages",
+            url: "/dashboard/admin/package-management/all-packages",
+            icon: Receipt,
+          },
 
-      //     {
-      //       title: "Syllabuses",
-      //       url: "/dashboard/admin/package-management/syllabuses",
-      //       icon: BookOpen,
-      //     },
-      //   ],
-      // },
+          {
+            title: "Syllabuses",
+            url: "/dashboard/admin/package-management/syllabuses",
+            icon: BookOpen,
+          },
+        ],
+      },
       // {
       //   title: "SOS Management",
       //   icon: ShieldAlert,

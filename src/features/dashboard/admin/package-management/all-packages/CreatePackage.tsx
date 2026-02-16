@@ -1,231 +1,261 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
-import { Check, Plus, Upload, X } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useMutationHandler } from "@/hooks/useMutationHandler";
+import { uploadSingleFile } from "@/services/uploadFile.service";
+import { useForm } from "@tanstack/react-form";
+import { useMutation } from "@tanstack/react-query";
+import { Camera, X } from "lucide-react";
+import { useState } from "react";
+import {
+  createPackage,
+  GET_ALL_PACKAGE_KEY,
+  updatePackage,
+} from "../services/package.service";
 
-// 1. Validation Schema
-const packageSchema = z.object({
-  photo: z.instanceof(File, { message: "Image is required" }).optional(),
-  name: z.string().min(3, "Name is required"),
-  price: z.coerce.number().min(1, "Price must be greater than 0"),
-  description: z.string().min(10, "Description is too short"),
-  features: z.array(z.string()).min(1, "Add at least one feature"),
-});
+type Props = {
+  mode?: "create" | "edit";
+  data?: any;
+};
 
-export default function CreatePackagePage() {
-  // Local state for the "Add Feature" input
-  const [tempFeature, setTempFeature] = useState("");
+export default function PackageForm({ mode = "create", data }: Props) {
+  const [submitError, setSubmitError] = useState("");
+  const [imgPreview, setImgPreview] = useState<string>("");
+
+  const imgUploadMutation = useMutation({
+    mutationFn: uploadSingleFile,
+  });
+
+  // create/update mutation
+  const packageMutation = useMutationHandler({
+    mutationFn: (payload: any) =>
+      mode === "edit"
+        ? updatePackage(payload, data.id)
+        : createPackage(payload),
+    invalidateKeys: [[GET_ALL_PACKAGE_KEY]],
+  });
 
   const form = useForm({
     defaultValues: {
-      photo: undefined,
-      name: "",
-      price: 0,
-      description: "",
-      features: [] as string[],
-    } as any,
-    validators: {
-      onSubmit: packageSchema as any,
+      title: data?.title || "",
+      description: data?.description || "",
+      price: data?.price || "",
+      img_url: data?.img_url || "",
     },
     onSubmit: async ({ value }) => {
-      console.log("Package Created:", value);
-      toast.success("Package created successfully!");
+      try {
+        setSubmitError("");
+        await packageMutation.mutateAsync(value);
+        if (mode === "create") form.reset();
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message ||
+          error?.response?.data?.detail ||
+          error?.message ||
+          "Something went wrong";
+        setSubmitError(message);
+      }
     },
   });
 
   return (
-    <form
-      id="create-package-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-      className="space-y-5"
-    >
-      {/* --- Photo Upload --- */}
-      <form.Field name="photo">
-        {(field) => (
-          <div className="flex flex-col gap-2">
-            <FieldLabel>Package Image</FieldLabel>
-            <div className="relative w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition cursor-pointer overflow-hidden group">
-              {field.state.value instanceof File ? (
-                <>
-                  <img
-                    src={URL.createObjectURL(field.state.value)}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
-                </>
-              ) : (
-                <div className="flex flex-col items-center text-gray-500">
-                  <div className="p-3 bg-white rounded-full shadow-sm mb-2">
-                    <Upload className="w-6 h-6 text-red-600" />
-                  </div>
-                  <p className="text-sm font-semibold">Click to upload image</p>
-                  <p className="text-xs text-gray-400">
-                    SVG, PNG, JPG or GIF (max. 2MB)
-                  </p>
-                </div>
-              )}
-              <Input
-                type="file"
-                className="absolute inset-0 opacity-0 cursor-pointer h-full"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) field.handleChange(file);
+    <div className="bg-gray-50/50 md:py-6 py-4 md:px-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}
+      >
+        <FieldGroup className="space-y-6">
+          {/* IMAGE */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Package Image</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form.Field name="img_url">
+                {(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                  const previewSrc = imgPreview || (field.state.value as any);
+
+                  return (
+                    <Field data-invalid={isInvalid} className="space-y-3">
+                      <Label>Image *</Label>
+
+                      <label className="group relative w-full rounded-lg border-2 border-dashed flex items-center justify-center overflow-hidden bg-white hover:bg-gray-50 cursor-pointer  aspect-video">
+                        {previewSrc ? (
+                          <img
+                            src={previewSrc}
+                            alt="Package"
+                            className="w-full h-full object-cover "
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center text-gray-400 h-40 justify-center">
+                            <Camera className="w-8 h-8 mb-2" />
+                            <span className="text-xs uppercase font-bold">
+                              Upload package image
+                            </span>
+                          </div>
+                        )}
+
+                        {previewSrc && !imgUploadMutation.isPending && (
+                          <button
+                            type="button"
+                            className="absolute top-2 right-2 bg-white rounded-full p-1 shadow hover:bg-red-50 text-red-500"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setImgPreview("");
+                              field.handleChange("");
+                            }}
+                            aria-label="Remove image"
+                          >
+                            <X size={16} />
+                          </button>
+                        )}
+
+                        {imgUploadMutation.isPending && (
+                          <div className="absolute inset-0 bg-white/70 flex items-center justify-center text-xs font-semibold text-gray-700">
+                            Uploading...
+                          </div>
+                        )}
+
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            e.target.value = "";
+                            if (!file) return;
+
+                            setImgPreview(URL.createObjectURL(file));
+
+                            imgUploadMutation.mutate(file, {
+                              onSuccess: (url) => {
+                                field.handleChange(url);
+                                setImgPreview(url);
+                              },
+                              onError: () => {
+                                field.handleChange("");
+                                setImgPreview("");
+                              },
+                            });
+                          }}
+                        />
+                      </label>
+
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
                 }}
-              />
+              </form.Field>
+            </CardContent>
+          </Card>
+
+          {/* BASIC INFO */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Package Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <form.Field name="title">
+                {(field) => (
+                  <Field>
+                    <FieldLabel>Title *</FieldLabel>
+                    <Input
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      placeholder="Enter package title"
+                    />
+                    <FieldError errors={field.state.meta.errors} />
+                  </Field>
+                )}
+              </form.Field>
+
+              <form.Field name="description">
+                {(field) => (
+                  <Field>
+                    <FieldLabel>Description *</FieldLabel>
+                    <Textarea
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      placeholder="Write package description..."
+                      className="min-h-[120px]"
+                    />
+                    <FieldError errors={field.state.meta.errors} />
+                  </Field>
+                )}
+              </form.Field>
+
+              <form.Field name="price">
+                {(field) => (
+                  <Field>
+                    <FieldLabel>Price *</FieldLabel>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      placeholder="Enter package price in BDT"
+                    />
+                    <FieldError errors={field.state.meta.errors} />
+                  </Field>
+                )}
+              </form.Field>
+            </CardContent>
+          </Card>
+
+          {/* ERROR */}
+          {submitError && (
+            <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {submitError}
             </div>
-          </div>
-        )}
-      </form.Field>
-
-      {/* Name */}
-      <form.Field name="name">
-        {(field) => (
-          <Field>
-            <FieldLabel>Package Name</FieldLabel>
-            <Input
-              placeholder="e.g. Elite Striking Class"
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-            />
-            {field.state.meta.isTouched && (
-              <FieldError errors={field.state.meta.errors} />
-            )}
-          </Field>
-        )}
-      </form.Field>
-
-      {/* Price & Billing */}
-      <div className="grid grid-cols-1 gap-4">
-        <form.Field name="price">
-          {(field) => (
-            <Field>
-              <FieldLabel>Price ($)</FieldLabel>
-              <Input
-                type="number"
-                placeholder="99.00"
-                value={field.state.value}
-                onChange={(e) => field.handleChange(Number(e.target.value))}
-              />
-              {field.state.meta.isTouched && (
-                <FieldError errors={field.state.meta.errors} />
-              )}
-            </Field>
           )}
-        </form.Field>
-      </div>
 
-      {/* Description */}
-      <form.Field name="description">
-        {(field) => (
-          <Field>
-            <FieldLabel>Description</FieldLabel>
-            <Textarea
-              placeholder="Describe what this package includes..."
-              className="resize-none h-24"
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-            />
-            {field.state.meta.isTouched && (
-              <FieldError errors={field.state.meta.errors} />
-            )}
-          </Field>
-        )}
-      </form.Field>
-
-      {/* Features Array Field */}
-      <form.Field name="features">
-        {(field) => (
-          <div className="space-y-3 pt-2">
-            <FieldLabel>What&apos;s Included? (Features)</FieldLabel>
-
-            {/* Input to Add Feature */}
-            <div className="flex gap-2">
-              <Input
-                value={tempFeature}
-                onChange={(e) => setTempFeature(e.target.value)}
-                placeholder="e.g. Unlimited Gym Access"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    if (tempFeature.trim()) {
-                      field.handleChange([...field.state.value, tempFeature]);
-                      setTempFeature("");
-                    }
-                  }
-                }}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => {
-                  if (tempFeature.trim()) {
-                    field.handleChange([...field.state.value, tempFeature]);
-                    setTempFeature("");
-                  }
-                }}
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-
-            {/* List of Added Features */}
-            <div className="space-y-2">
-              {field.state.value.map((feat: any, i: any) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-100"
-                >
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium">{feat}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newFeatures = field.state.value.filter(
-                        (_: any, idx: any) => idx !== i,
-                      );
-                      field.handleChange(newFeatures);
-                    }}
-                    className="text-gray-400 hover:text-red-600"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              {field.state.value.length === 0 && (
-                <p className="text-xs text-gray-400 italic">
-                  No features added yet.
-                </p>
-              )}
-            </div>
-            {field.state.meta.isTouched && (
-              <FieldError errors={field.state.meta.errors} />
-            )}
+          {/* SUBMIT */}
+          <div className="sticky bottom-4 z-10">
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full shadow-xl bg-red-600 hover:bg-red-700 text-white font-bold py-6 text-lg"
+              disabled={
+                form.state.isSubmitting ||
+                packageMutation.isPending ||
+                imgUploadMutation.isPending
+              }
+            >
+              {imgUploadMutation.isPending
+                ? "Uploading image..."
+                : form.state.isSubmitting || packageMutation.isPending
+                  ? mode === "edit"
+                    ? "Updating..."
+                    : "Creating..."
+                  : mode === "edit"
+                    ? "Update Package"
+                    : "Create Package"}
+            </Button>
           </div>
-        )}
-      </form.Field>
-
-      {/* submit button */}
-      <div className="flex items-center justify-end">
-        <Button type="submit" className="mt-4">
-          Create Package
-        </Button>
-      </div>
-    </form>
+        </FieldGroup>
+      </form>
+    </div>
   );
 }

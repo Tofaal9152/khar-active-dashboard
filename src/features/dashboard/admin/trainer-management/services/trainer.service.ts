@@ -1,7 +1,8 @@
 import { useFetchData } from "@/hooks/useFetchData";
 import { queryType } from "@/types/query.type";
 import { makeEndpoint } from "@/utils/makeEndpoint";
-
+import { request } from "@/lib/request";
+import { z } from "zod";
 export const GET_ALL_TRAINER_KEY = "getAllTrainer";
 // get all non-paginated places
 export const getAllTrainer = ({ query }: { query: queryType }) => {
@@ -15,10 +16,7 @@ export const getAllTrainer = ({ query }: { query: queryType }) => {
   });
 };
 
-// update trainer
-import { request } from "@/lib/request";
-import { z } from "zod";
-
+// update trainer Schema
 const slotSchema = z.object({
   day_of_week: z.string().min(1, "Day of week is required"),
   start: z.string().min(1, "Start time is required"),
@@ -51,31 +49,8 @@ export const trainerSchema = z.object({
 });
 
 export type TrainerFormData = z.infer<typeof trainerSchema>;
-// upload file
-type UploadFileResponse = {
-  success: boolean;
-  filename: string;
-  stored_path: string;
-  compression_started: boolean;
-};
 
-export const uploadSingleFile = async (file: File): Promise<string> => {
-  if (!(file instanceof File)) {
-    throw new Error("Invalid file provided for upload");
-  }
-
-  const formData = new FormData();
-  formData.append("file", file);
-  // demo
-  const res: any = await request.post<UploadFileResponse>(
-    `/upload-file/`,
-    formData,
-  );
-  console.log("response from upload:", res);
-  const url = res?.stored_path;
-  if (!url) throw new Error("Upload succeeded but URL was not returned");
-  return url;
-};
+// update trainer
 
 export const updateTrainer = (
   payload: TrainerFormData,
@@ -92,7 +67,6 @@ export const updateTrainer = (
     address: payload.address,
     training_types: payload.training_types,
     training_locations: payload.training_locations,
-    // Note: Mapping corrected spelling (frontend) to payload spelling (backend)
     availabile_days_in_week: payload.available_days_in_week,
     gender: payload.gender ? payload.gender.toString() : "",
     bio: payload.bio,

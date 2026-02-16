@@ -22,8 +22,6 @@ const FieldRow = ({
 );
 
 export default function TrainerDetails({ data }: Props) {
-  const imgClass = "w-40 h-40 object-cover rounded border";
-
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -32,10 +30,10 @@ export default function TrainerDetails({ data }: Props) {
           {data.profile_img_url ? (
             <div className="relative w-full h-64">
               <Image
-          src={data.profile_img_url}
-          alt="profile"
-          className="object-contain"
-          fill
+                src={data.profile_img_url}
+                alt="profile"
+                className="object-contain"
+                fill
               />
             </div>
           ) : (
@@ -50,10 +48,10 @@ export default function TrainerDetails({ data }: Props) {
           {data.nid_img_url ? (
             <div className="relative w-full h-64">
               <Image
-          src={data.nid_img_url}
-          alt="nid"
-          className="object-contain"
-          fill
+                src={data.nid_img_url}
+                alt="nid"
+                className="object-contain"
+                fill
               />
             </div>
           ) : (
