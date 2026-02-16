@@ -10,21 +10,21 @@ const page = () => {
     <DashboardPageLayout
       title="Manage Trainers"
       subtitle="View and manage all trainers in the system."
-      action={
-        <AppDialog
-          title="Add New Trainer"
-          size="xl"
-          description="Enter the details of the new trainer below. Click save when you're done."
-          trigger={
-            <Button variant={"destructive"}>
-              <Plus size={16} />
-              Add Trainer
-            </Button>
-          }
-        >
-          <AddTrainerForm />
-        </AppDialog>
-      }
+      // action={
+      //   <AppDialog
+      //     title="Add New Trainer"
+      //     size="xl"
+      //     description="Enter the details of the new trainer below. Click save when you're done."
+      //     trigger={
+      //       <Button variant={"destructive"}>
+      //         <Plus size={16} />
+      //         Add Trainer
+      //       </Button>
+      //     }
+      //   >
+      //     <AddTrainerForm />
+      //   </AppDialog>
+      // }
     >
       <AllTrainer />
     </DashboardPageLayout>

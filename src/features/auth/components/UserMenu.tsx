@@ -21,8 +21,12 @@ const UserMenu = ({ session }: { session: any }) => {
     data: userData,
     isLoading,
     error,
-  } = useFetchData<any>(["student-profile-data"], "/student/profile/", {
-    enabled: role === "STUDENT",
+  } = useFetchData<any>({
+    url: `/users/${session?.user?.id}/`,
+    querykey: ["user", session?.user?.id],
+    options: {
+      enabled: role === "STUDENT",
+    },
   });
 
   const imageSrc =
@@ -45,7 +49,7 @@ const UserMenu = ({ session }: { session: any }) => {
         <PopoverTrigger
           className={cn(
             "flex items-center justify-center rounded-full",
-            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
           )}
           aria-label="Open user menu"
         >

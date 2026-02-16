@@ -8,7 +8,6 @@ import { imagePath } from "@/constants/imagePath";
 
 import SignOut from "@/features/auth/signout/SignOut";
 import { Button } from "../../ui/button";
-import ReferAFriend from "./ReferAFriend";
 
 export default function Navbar({ session }: { session?: any }) {
   const [open, setOpen] = useState(false);
@@ -32,9 +31,6 @@ export default function Navbar({ session }: { session?: any }) {
         {/* Desktop Nav */}
         {session ? (
           <ul className="hidden md:flex items-center gap-8 text-sm text-[#444444]">
-            <li>
-              <ReferAFriend />
-            </li>
             <li>
               <Link
                 href="/my-bookings"
@@ -82,7 +78,7 @@ export default function Navbar({ session }: { session?: any }) {
         <div className="md:hidden mt-4 rounded-xl border border-black/10 bg-white shadow-lg">
           <ul className="flex flex-col divide-y text-sm text-[#111111]">
             <li className="block px-4 py-3 font-medium hover:bg-black/5">
-              <ReferAFriend />
+              {/* <ReferAFriend /> */}
             </li>
             <li>
               <Link
