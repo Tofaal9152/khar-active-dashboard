@@ -45,7 +45,9 @@ import {
 import MultiSelectWithOther from "./MultiSelectWithOther";
 
 import { Switch } from "@/components/ui/switch";
+import { useMutationHandler } from "@/hooks/useMutationHandler";
 import {
+  GET_ALL_TRAINER_KEY,
   trainerSchema,
   updateTrainer,
   uploadSingleFile,
@@ -61,8 +63,9 @@ export default function TrainerRegistration({
 }) {
   const [submitError, setSubmitError] = useState<string>("");
   // tanstack api call make
-  const updateTrainerMutation = useMutation({
+  const updateTrainerMutation = useMutationHandler({
     mutationFn: (payload: any) => updateTrainer(payload, data.id, data.user), // TODO: replace "1" with actual trainer ID
+    invalidateKeys: [[GET_ALL_TRAINER_KEY]],
   });
 
   const profileUploadMutation = useMutation({
@@ -181,7 +184,7 @@ export default function TrainerRegistration({
                       {previewSrc && !profileUploadMutation.isPending && (
                         <button
                           type="button"
-                          className="absolute top-2 right-2 bg-white rounded-full p-1 shadow hover:bg-red-50 text-red-500"
+                          className="absolute top-4 right-4 bg-white rounded-full p-1 cursor-pointer shadow hover:bg-red-50 text-red-500"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();

@@ -2,6 +2,7 @@ import { useFetchData } from "@/hooks/useFetchData";
 import { queryType } from "@/types/query.type";
 import { makeEndpoint } from "@/utils/makeEndpoint";
 
+export const GET_ALL_TRAINER_KEY = "getAllTrainer";
 // get all non-paginated places
 export const getAllTrainer = ({ query }: { query: queryType }) => {
   const endPoint = makeEndpoint("/administrator/trainers/", {
@@ -10,7 +11,7 @@ export const getAllTrainer = ({ query }: { query: queryType }) => {
   });
   return useFetchData<any>({
     url: endPoint,
-    querykey: ["trainers", query],
+    querykey: [GET_ALL_TRAINER_KEY, query],
   });
 };
 
