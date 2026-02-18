@@ -3,7 +3,6 @@ import { AppDialog } from "@/components/shared/AppDialog";
 import { Button } from "@/components/ui/button";
 import AddTrainee from "@/features/dashboard/admin/trainee-management/all-trainee/AddTrainee";
 import AllTrainee from "@/features/dashboard/admin/trainee-management/all-trainee/AllTrainee";
-import { AddTrainerForm } from "@/features/dashboard/admin/trainer-management/all-trainer/AddTrainer";
 import { Plus } from "lucide-react";
 
 const page = () => {

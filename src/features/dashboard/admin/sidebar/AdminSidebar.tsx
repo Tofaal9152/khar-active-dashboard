@@ -7,28 +7,17 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import {
-  Activity,
-  BarChart,
-  BookOpen,
-  ClipboardList,
-  FilePlus2,
-  FileText,
-  History,
-  Landmark,
-  Map,
-  Package,
-  Receipt,
-  ShieldAlert,
-  TrendingUp,
-  UserPlus,
-  Users,
-} from "lucide-react";
 import { AppSidebarContent } from "../../../../components/layout/dashboard/AppSidebar/AppSidebarContent";
 import { AppSidebarHeader } from "../../../../components/layout/dashboard/AppSidebar/AppSidebarHeader";
 import SingleComponentsidebar from "../../../../components/layout/dashboard/AppSidebar/SingleComponentsidebar";
+import {
+  AdminAnalytics,
+  AdminManagementItems,
+  KharActiveMenuItems,
+} from "./sidebarItem";
 
 export function AdminSidebar({ session }: { session: any }) {
+  const kharActiveSidebarItems = KharActiveMenuItems();
   const adminManagementItems = AdminManagementItems();
   const adminAnalytics = AdminAnalytics();
 
@@ -63,6 +52,10 @@ export function AdminSidebar({ session }: { session: any }) {
           title={"Management and Reporting"}
           items={adminManagementItems.navMain}
         />
+        <AppSidebarContent
+          title={"Khar Academy Management"}
+          items={kharActiveSidebarItems.navMain}
+        />
       </SidebarContent>
 
       <SidebarRail />
@@ -71,94 +64,4 @@ export function AdminSidebar({ session }: { session: any }) {
       </SidebarFooter>
     </Sidebar>
   );
-}
-
-// 1. Analytics Quick Links
-export const AdminAnalytics = () => ({
-  item: [
-    {
-      title: "Overview",
-      url: "/dashboard/admin",
-      icon: ClipboardList,
-    },
-    // {
-    //   title: "Session Logs",
-    //   url: "/dashboard/admin/analytics-management/session-logs",
-    //   icon: Map,
-    // },
-  ],
-});
-
-// 2. Full Management Structure
-export function AdminManagementItems() {
-  return {
-    navMain: [
-      {
-        title: "Trainer Management",
-        icon: Users,
-        isActive: true,
-        items: [
-          {
-            title: "All Trainer",
-            url: "/dashboard/admin/trainer-management/all-trainer",
-            icon: UserPlus,
-          },
-        ],
-      },
-      // {
-      //   title: "Trainee Management",
-      //   icon: Users,
-      //   isActive: true,
-      //   items: [
-      //     {
-      //       title: "All Trainee",
-      //       url: "/dashboard/admin/trainee-management/all-trainee",
-      //       icon: Users,
-      //     },
-      //   ],
-      // },
-      {
-        title: "Package Management",
-        icon: Package,
-        isActive: true,
-        items: [
-          {
-            title: "All Packages",
-            url: "/dashboard/admin/package-management/all-packages",
-            icon: Receipt,
-          },
-
-          {
-            title: "Syllabuses",
-            url: "/dashboard/admin/package-management/syllabuses",
-            icon: BookOpen,
-          },
-        ],
-      },
-      // {
-      //   title: "SOS Management",
-      //   icon: ShieldAlert,
-      //   isActive: true,
-      //   items: [
-      //     {
-      //       title: "SOS History",
-      //       url: "/dashboard/admin/sos-management/sos-history",
-      //       icon: History,
-      //     },
-      //   ],
-      // },
-      // {
-      //   title: "Reporting Management",
-      //   icon: BarChart,
-      //   isActive: true,
-      //   items: [
-      //     {
-      //       title: "Lorem 500",
-      //       url: "/dashboard/admin/reporting-management/session-reports",
-      //       icon: FileText,
-      //     },
-      //   ],
-      // },
-    ],
-  };
 }

@@ -78,8 +78,8 @@ export default function DataTable<TData>({
               ) : (
                 <TableRow>
                   <TableCell
-                    // colSpan={columns.length}
-                    className="h-24 text-center"
+                    colSpan={columns.length}
+                    className=" text-center"
                   >
                     No results.
                   </TableCell>
